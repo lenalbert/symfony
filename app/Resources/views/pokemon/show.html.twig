@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Détails
+{% endblock %}
+
+{% block body %}
+   <div class="content">
+        <section class="hero is-bold is-warning">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">Détails</h1>
+                    <h2 class="subtitle">Apprenez en plus sur le Pokemon sélectionné</h2>
+                </div>
+            </div>
+        </section>
+        <div class="container">
+            <div class="card">
+                <div class="card-content">
+                    <p>Nom : {{ pokemon.nom }}</p>
+                    <p>Sexe : <span class="icon is-small is-left">
+                        {% if pokemon.sexe == "M" %}
+                            <i class="fas fa-mars"></i>
+                        {% else %}
+                            <i class="fas fa-venus"></i>
+                        {% endif %}
+                    </span></p>
+                    <p>Type : {{ pokemon.type }}</p>
+                    <p>Dresseur origine : {{ pokemon.do }}</p>
+                    <p>Niveau : {{ pokemon.niveau }}</p>
+                    <p>Points exp : {{ pokemon.xp }}</p>
+                    {% if pokemon.training != 0 %}
+                        <p>Dernier entraînement : {{ pokemon.training|date("d/m/Y") }}</p>
+                    {% endif %}
+                    {% if pokemon.aVendre %}
+                        <p>Prix de vente : {{ pokemon.prix }}<span class="icon is-small"><i class="fas fa-coins"></i></span></p>
+                    {% endif %}
+                    <p class="btn-details">
+                        
+                        {% if not pokemon.aVendre %}
+                            <button class="button is-danger is-outlined modal-button" data-target="modalSell">Vendre</button>
+                            {% if pokemon.training < (date().timestamp - 60 * 60) %}
+                                <button class="button is-link is-outlined modal-button" data-target="modalCatch">Chasser</button>
+                                <a href="{{ path('pokemon_train', { id: pokemon.id }) }}" class="button is-warning is-outlined">Entraîner</a>
+                            {% else %}
+                                <button class="button is-outlined" disabled="disabled">Chasser</button>
+                                <button class="button is-outlined" disabled="disabled">Entraîner</button>
+                                <p> Prochain entrainement/session de chasse disponible dans {{ (((pokemon.training-date('now').timestamp)/60)+60)|round(0, 'ceil') }} minutes.</p>
+                            {% endif %}
+                        {% else %}
+                            <button class="button is-outlined" disabled="disabled">Vendre</button>
+                            <button class="button is-outlined" disabled="disabled">Chasser</button>
+                            <button class="button is-outlined" disabled="disabled">Entraîner</button>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modalSell" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Vente</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <form action="{{ path('pokemon_sell', { id: pokemon.id }) }}" method="POST">
+                <section class="modal-card-body">
+                    <div class="field">
+                        <label class="label">Prix de vente</label>
+                        <div class="control">
+                            <input class="input" name="price" type="number" placeholder="Prix de vente">
+                        </div>
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button type="submit" class="button is-danger">Vendre</button>
+                    <button type="button" class="button">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalCatch" class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Partir en chasse</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <form action="{{ path('pokemon_catch', { id: pokemon.id }) }}" method="POST">
+                <section class="modal-card-body">
+                    {% if places is defined and places is not empty %}
+                        <div class="field">
+                            <label class="label">Lieu de chasse</label>
+                            <div class="control">
+                                <span class="select is-fullwidth">
+                                    <select name="place" required="required">
+                                        {% for place in places %}
+                                            <option value="{{ place.id }}">{{ place.label|capitalize }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </span>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>Il n'y a de lieu de chasse</p>
+                    {% endif %}
+                </section>
+                <footer class="modal-card-foot">
+                    <button type="submit" class="button is-primary">Capturer</button>
+                    <button type="button" class="button">Cancel</button>
+                </footer>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/modal.js') }}" type="text/javascript"></script>
+{% endblock %}

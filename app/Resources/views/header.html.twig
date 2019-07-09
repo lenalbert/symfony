@@ -1,0 +1,41 @@
+<header>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+        <div id="navbar" class="navbar-menu">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="{{ path('homepage') }}"> 
+                  <img src="/pokegame_sf/pokemon_logo.png" alt="">
+                </a>
+            </div>
+            <div class="navbar-start">
+                <a class="navbar-item" href="{{ path('homepage') }}">Accueil</a> 
+                {% if app.session.get("isConnected") %}
+                    <a class="navbar-item" href="{{ path('pokemon_index') }}">Mon Pokedex</a>
+                    <div class="navbar-item has-dropdown is-hoverable">
+                        <a class="navbar-link" href="{{ path('refpokemon_index') }}">Pokemons</a>
+                        <div class="navbar-dropdown">
+                            <a class="navbar-item" href="{{ path('refpokemon_index') }}">Consulter les pokemons existants</a>
+                            <a class="navbar-item" href="{{ path('refpokemon_stats') }}">Nombre de Pokemons par type</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    {% if app.session.get("isConnected") %}
+                        <div class="navbar-item"><b>{{ app.session.get("trainer").username }}</b></div>
+                        <div class="navbar-item">
+                            <div>{{ app.session.get("trainer").nbPieces }}</div>
+                            <span class="icon is-small is-left"><i class="fas fa-coins"></i></span>
+                        </div>
+                        <div><a class="button is-danger is-outlined" href="{{ path('disconnect') }}">Déconnexion</a></div>
+                    {% else %}
+                        <div class="buttons">
+                            <a class="button is-link is-outlined" href="{{ path('inscription') }}" role="button">Inscription</a>
+                            <a class="button is-link is-outlined" href="{{ path('login') }}">Connexion</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
